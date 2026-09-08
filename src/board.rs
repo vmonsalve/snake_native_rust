@@ -21,7 +21,7 @@ impl Board {
             print!("|");
 
             for x in 0..self.width {
-                if x == snake.x() && y == snake.y() {
+                if snake.contains(x, y) {
                     print!("O");
                 } else {
                     print!(" ");
