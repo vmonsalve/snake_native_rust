@@ -6,7 +6,8 @@ use snake::Snake;
 
 fn main() {
     let board = Board::new(20, 10);
-    let snake = Snake::new();
+    let mut snake = Snake::new();
 
+    snake.move_right();
     board.draw(&snake);
 }

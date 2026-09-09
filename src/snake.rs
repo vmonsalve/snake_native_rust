@@ -27,4 +27,16 @@ impl Snake {
         }
         false
     }
+
+    pub fn move_right(&mut self) {
+        let head = self.body.last().unwrap();
+        
+        let new_head = Position {
+            x: head.x + 1,
+            y: head.y,
+        };
+
+        self.body.push(new_head);
+        self.body.remove(0);
+    }
 }
