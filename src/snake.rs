@@ -18,6 +18,10 @@ impl Snake {
             ],
         }
     }
+    
+    pub fn head(&self) -> &Position {
+        self.body.last().unwrap()
+    }
 
     pub fn contains(&self, x: usize, y: usize) -> bool {
         for position in &self.body {
