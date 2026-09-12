@@ -24,13 +24,13 @@ impl Game {
             clear_screen();
             let head = self.snake.head();
             println!("Cabeza: ({}, {} Ancho: {})", head.x, head.y, width);
-
+            
+            self.board.draw(&self.snake);
+            
             if head.x >= width - 1 {
                 break;
             }
 
-            self.board.draw(&self.snake);
-            
             self.snake.move_right();
 
             thread::sleep(Duration::from_millis(250));
