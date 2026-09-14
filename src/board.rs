@@ -18,6 +18,10 @@ impl Board {
         self.width
     }
 
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
     pub fn draw(&self, snake: &Snake) {
         println!("+{}+", "-".repeat(self.width));
 

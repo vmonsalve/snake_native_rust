@@ -3,8 +3,16 @@ pub struct Position {
     pub y: usize,
 }
 
+pub enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
 pub struct Snake {
     body: Vec<Position>,
+    direction: Direction,
 }
 
 impl Snake {
@@ -16,6 +24,7 @@ impl Snake {
                 Position { x: 9, y: 5 },
                 Position { x: 10, y: 5 },
             ],
+            direction: Direction::Right,
         }
     }
     
@@ -31,13 +40,34 @@ impl Snake {
         }
         false
     }
+    
+    pub fn set_direction(&mut self, direction: Direction) {
+        self.direction = direction;
+    }
 
-    pub fn move_right(&mut self) {
+    pub fn move_forward(&mut self) {
         let head = self.body.last().unwrap();
-        
-        let new_head = Position {
-            x: head.x + 1,
-            y: head.y,
+
+        let new_head = match self.direction {
+            Direction::Right => Position {
+                x: head.x + 1,
+                y: head.y,
+            },
+
+            Direction::Left => Position {
+                x: head.x - 1,
+                y: head.y,
+            },
+
+            Direction::Up => Position {
+                x: head.x,
+                y: head.y - 1,
+            },
+
+            Direction::Down => Position {
+                x: head.x,
+                y: head.y + 1,
+            },
         };
 
         self.body.push(new_head);
