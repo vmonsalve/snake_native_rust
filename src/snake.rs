@@ -27,6 +27,10 @@ impl Snake {
             direction: Direction::Right,
         }
     }
+
+    pub fn direction(&self) -> &Direction {
+        &self.direction
+    }
     
     pub fn head(&self) -> &Position {
         self.body.last().unwrap()
