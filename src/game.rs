@@ -4,10 +4,15 @@ use crate::utils::{
     clear_screen,
     enter_alternate_screen,
     exit_alternate_screen,
+    enable_raw_mode,
+    disable_raw_mode,
 };
 
+use std::io::{self, Read};
 use std::thread;
 use std::time::Duration;
+use std::sync::mpsc;
+
 
 pub struct Game {
     board: Board,
@@ -25,15 +30,35 @@ impl Game {
     pub fn run(&mut self) {
         let width = self.board.width();
         let height = self.board.height();
-        
+        let (tx, rx) = mpsc::channel::<Direction>();
+
+        thread::spawn(move || {    
+            let stdin = io::stdin();
+            for byte in stdin.lock().bytes() {
+                let direction = match byte.unwrap() {
+                    b'w' => Some(Direction::Up),
+                    b's' => Some(Direction::Down),
+                    b'a' => Some(Direction::Left),
+                    b'd' => Some(Direction::Right),
+                    b'x' => continue,
+                    _ => None,
+                };
+
+              
+                if let Some(dir) = direction {
+                    tx.send(dir).unwrap();
+                }
+         
+            }
+        });
+    
         enter_alternate_screen();
+        enable_raw_mode();
 
         loop {
 
             clear_screen();
 
-            // Obtenemos las coordenadas de la cabeza y las copiamos.
-            // `head` solamente existe dentro de este bloque.
             let (head_x, head_y) = {
                 let head = self.snake.head();
                 (head.x, head.y)
@@ -48,14 +73,10 @@ impl Game {
 
             self.board.draw(&self.snake);
 
-            // Prueba temporal:
-            // cuando llegue a x = 15 hacemos que baje.
-            if head_x == 15 {
-                self.snake.set_direction(Direction::Down);
+            if let Ok(direction) = rx.try_recv() {
+                self.snake.set_direction(direction);
             }
 
-            // Comprobamos la pared correspondiente
-            // a la dirección actual.
             let collision = match self.snake.direction() {
                 Direction::Right => head_x >= width - 1,
                 Direction::Left => head_x == 0,
@@ -67,13 +88,14 @@ impl Game {
                 break;
             }
 
-            // Sólo nos movemos si no existe una colisión.
             self.snake.move_forward();
 
             thread::sleep(Duration::from_millis(250));
 
         }
-
+        
+        disable_raw_mode();
         exit_alternate_screen();
+
     }
 }
