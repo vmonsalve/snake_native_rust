@@ -36,10 +36,10 @@ impl Game {
             let stdin = io::stdin();
             for byte in stdin.lock().bytes() {
                 let direction = match byte.unwrap() {
-                    b'w' => Some(Direction::Up),
-                    b's' => Some(Direction::Down),
-                    b'a' => Some(Direction::Left),
-                    b'd' => Some(Direction::Right),
+                    b'i' => Some(Direction::Up),
+                    b'k' => Some(Direction::Down),
+                    b'j' => Some(Direction::Left),
+                    b'l' => Some(Direction::Right),
                     b'x' => continue,
                     _ => None,
                 };
@@ -85,6 +85,10 @@ impl Game {
             };
 
             if collision {
+                break;
+            }
+
+            if self.snake.will_collide_with_self() {
                 break;
             }
 
