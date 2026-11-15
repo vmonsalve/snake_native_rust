@@ -1,5 +1,7 @@
 use crate::board::Board;
 use crate::snake::{Direction, Snake};
+use crate::food::Food;
+
 use crate::utils::{
     clear_screen,
     enter_alternate_screen,
@@ -17,6 +19,7 @@ use std::sync::mpsc;
 pub struct Game {
     board: Board,
     snake: Snake,
+    food: Food,
 }
 
 impl Game {
@@ -24,6 +27,7 @@ impl Game {
         Game {
             board: Board::new(20, 10),
             snake: Snake::new(),
+            food: Food::new(3, 3),
         }
     }
 
@@ -31,6 +35,8 @@ impl Game {
         let width = self.board.width();
         let height = self.board.height();
         let (tx, rx) = mpsc::channel::<Direction>();
+
+        
 
         thread::spawn(move || {    
             let stdin = io::stdin();
@@ -65,13 +71,14 @@ impl Game {
             };
 
             println!(
-                "Cabeza: ({}, {} Ancho: {})",
+                "Cabeza: ({}, {} Ancho: {}, Longitud: {})",
                 head_x,
                 head_y,
-                width
+                width,
+                self.snake.len()
             );
 
-            self.board.draw(&self.snake);
+            self.board.draw(&self.snake, &self.food);
 
             if let Ok(direction) = rx.try_recv() {
                 self.snake.set_direction(direction);
@@ -88,11 +95,16 @@ impl Game {
                 break;
             }
 
-            if self.snake.will_collide_with_self() {
+            let next = self.snake.next_position();
+            let food = self.food.position();
+
+            let eats = next.x == food.x && next.y == food.y;
+
+            if self.snake.will_collide_with_self(eats) {
                 break;
             }
 
-            self.snake.move_forward();
+            self.snake.move_forward(eats);
 
             thread::sleep(Duration::from_millis(250));
 

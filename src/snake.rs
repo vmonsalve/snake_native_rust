@@ -75,13 +75,21 @@ impl Snake {
         false
     }
 
-    pub fn will_collide_with_self(&self) -> bool {
+    pub fn will_collide_with_self(&self, grow: bool) -> bool {
         let next = self.next_position();
-        for position in &self.body[1..] {
+
+        let body = if grow {
+            &self.body[..]
+        } else {
+            &self.body[1..]
+        };
+
+        for position in &self.body {
             if position.x == next.x && position.y == next.y {
                 return true;
             }
         }
+
         false
     }
     
@@ -89,11 +97,18 @@ impl Snake {
         self.direction = direction;
     }
 
-    pub fn move_forward(&mut self) {
+    pub fn move_forward(&mut self, grow: bool) {
 
         let new_head = self.next_position();
 
         self.body.push(new_head);
-        self.body.remove(0);
+
+        if !grow {
+           self.body.remove(0);
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.body.len()
     }
 }

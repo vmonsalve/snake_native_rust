@@ -4,6 +4,7 @@ pub struct Board {
 }
 
 use crate::snake::Snake;
+use crate::food::Food;
 
 impl Board {
     
@@ -22,7 +23,7 @@ impl Board {
         self.height
     }
 
-    pub fn draw(&self, snake: &Snake) {
+    pub fn draw(&self, snake: &Snake, food: &Food) {
         println!("+{}+", "-".repeat(self.width));
 
         for y in 0..self.height {
@@ -31,6 +32,8 @@ impl Board {
             for x in 0..self.width {
                 if snake.contains(x, y) {
                     print!("O");
+                } else if food.position().x == x && food.position().y == y {
+                    print!("*");
                 } else {
                     print!(" ");
                 }

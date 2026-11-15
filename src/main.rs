@@ -2,6 +2,7 @@ mod board;
 mod game;
 mod snake;
 mod utils;
+mod food;
 
 use game::Game;
 
