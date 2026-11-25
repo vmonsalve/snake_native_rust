@@ -84,7 +84,7 @@ impl Snake {
             &self.body[1..]
         };
 
-        for position in &self.body {
+        for position in body {
             if position.x == next.x && position.y == next.y {
                 return true;
             }

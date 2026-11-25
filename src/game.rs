@@ -8,6 +8,7 @@ use crate::utils::{
     exit_alternate_screen,
     enable_raw_mode,
     disable_raw_mode,
+    Random,
 };
 
 use std::io::{self, Read};
@@ -35,7 +36,7 @@ impl Game {
         let width = self.board.width();
         let height = self.board.height();
         let (tx, rx) = mpsc::channel::<Direction>();
-
+        let mut random = Random::from_time();
         
 
         thread::spawn(move || {    
@@ -71,11 +72,12 @@ impl Game {
             };
 
             println!(
-                "Cabeza: ({}, {} Ancho: {}, Longitud: {})",
+                "Cabeza: ({}, {} Ancho: {}, Longitud: {}, Random: {})",
                 head_x,
                 head_y,
                 width,
-                self.snake.len()
+                self.snake.len(),
+                random.next()
             );
 
             self.board.draw(&self.snake, &self.food);
@@ -105,6 +107,18 @@ impl Game {
             }
 
             self.snake.move_forward(eats);
+
+            if eats {
+                loop {
+                    let x = random.range(width as u64) as usize;
+                    let y = random.range(height as u64) as usize;
+
+                    if !self.snake.contains(x, y) {
+                        self.food = Food::new(x, y);
+                        break;
+                    }
+                }
+            }
 
             thread::sleep(Duration::from_millis(250));
 
