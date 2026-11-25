@@ -10,10 +10,10 @@ cargo run
 
 ## Comandos del juego
 
-i -> Arriba
-k -> Abajo
-l -> Derecha
-j -> izquierda
+* i -> Arriba
+* k -> Abajo
+* l -> Derecha
+* j -> izquierda
 
 ## Tablero
 
